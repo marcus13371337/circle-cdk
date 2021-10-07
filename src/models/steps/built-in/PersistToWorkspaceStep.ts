@@ -1,17 +1,24 @@
 import { pickAttributesToConfig } from '../../../utils/pickAttributesToConfig'
-import { Step } from '../Step'
+import { ChildEntryConfigContext } from '../../Entity'
+import { ExpressionOrValue } from '../../variables'
+import { Step, StepParent } from '../Step'
 
 export class PersistToWorkspaceStep extends Step<'persist_to_workspace'> {
-  public root: string
-  public paths: string[]
+  public root: ExpressionOrValue<string>
+  public paths: ExpressionOrValue<string>[]
 
-  constructor(root: string, paths: string[]) {
+  constructor(
+    root: ExpressionOrValue<string>,
+    paths: ExpressionOrValue<string>[],
+  ) {
     super('persist_to_workspace')
     this.root = root
     this.paths = paths
   }
 
-  toConfig() {
-    return { [this.type]: pickAttributesToConfig(this, ['root', 'paths']) }
+  toConfig(context: ChildEntryConfigContext<StepParent>) {
+    return {
+      [this.type]: pickAttributesToConfig(this, ['root', 'paths'], context),
+    }
   }
 }

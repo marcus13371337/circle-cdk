@@ -1,10 +1,12 @@
 import { pickAttributesToConfig } from '../../../utils/pickAttributesToConfig'
-import { Step } from '../Step'
+import { ChildEntryConfigContext } from '../../Entity'
+import { ExpressionOrValue } from '../../variables'
+import { Step, StepParent } from '../Step'
 
 export class RestoreCacheStep extends Step {
-  public key: string | null = null
-  public keys: string[] = []
-  public name: string | null = null
+  public key: ExpressionOrValue<string> | null = null
+  public keys: ExpressionOrValue<string>[] = []
+  public name: ExpressionOrValue<string> | null = null
 
   constructor() {
     super('restore_cache')
@@ -16,10 +18,14 @@ export class RestoreCacheStep extends Step {
     }
   }
 
-  toConfig() {
+  toConfig(context: ChildEntryConfigContext<StepParent>) {
     this.assertValid()
     return {
-      [this.type]: pickAttributesToConfig(this, ['key', 'keys', 'name']),
+      [this.type]: pickAttributesToConfig(
+        this,
+        ['key', 'keys', 'name'],
+        context,
+      ),
     }
   }
 }

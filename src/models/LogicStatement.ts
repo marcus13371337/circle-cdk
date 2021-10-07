@@ -1,7 +1,7 @@
 import { pickAttributesToConfig } from '../utils/pickAttributesToConfig'
 import { ChildEntry, ChildEntryConfigContext } from './Entity'
 import { Step } from './steps/Step'
-import { Compiler, isCompiler } from './Variables'
+import { compileExpression, Expression, ExpressionOrValue } from './variables'
 import { Workflow } from './workflow/Workflow'
 
 interface Matcher {
@@ -9,7 +9,7 @@ interface Matcher {
   value: string
 }
 
-export type BasicLogicStatement = string | number | boolean | Compiler
+export type BasicLogicStatement = ExpressionOrValue
 
 type Statement = LogicStatement | BasicLogicStatement
 
@@ -41,29 +41,33 @@ export class LogicStatement extends ChildEntry<
   }
 
   toConfig(context: ChildEntryConfigContext<Step | Workflow | LogicStatement>) {
-    const config = pickAttributesToConfig(this, ['not', 'matches'])
+    const config = pickAttributesToConfig(this, ['not', 'matches'], context)
 
     if (this.equal.length) {
-      config.equal = this.equal.map((equal) => compile(equal, context))
+      config.equal = this.equal.map((equal) => compileStatement(equal, context))
     }
 
     if (this.and.length) {
-      config.and = this.and.map((statement) => compile(statement, context))
+      config.and = this.and.map((statement) =>
+        compileStatement(statement, context),
+      )
     }
 
     if (this.or.length) {
-      config.or = this.or.map((statement) => compile(statement, context))
+      config.or = this.or.map((statement) =>
+        compileStatement(statement, context),
+      )
     }
 
     if (this.not) {
-      config.not = compile(this.not, context)
+      config.not = compileStatement(this.not, context)
     }
 
     return config
   }
 }
 
-export const compile = (
+export const compileStatement = (
   statement: LogicStatement | BasicLogicStatement,
   context: ChildEntryConfigContext<Step | Workflow | LogicStatement>,
 ) => {
@@ -71,12 +75,5 @@ export const compile = (
     return statement.toConfig(context)
   }
 
-  if (isCompiler(statement)) {
-    return statement({
-      pipelineParameterNames: context.pipeline.getParameterNames(),
-      parameterNames: context.availableParameters,
-    })
-  }
-
-  return statement
+  return compileExpression(statement, context)
 }

@@ -1,15 +1,17 @@
 import { pickAttributesToConfig } from '../../../utils/pickAttributesToConfig'
-import { Step } from '../Step'
+import { ChildEntryConfigContext } from '../../Entity'
+import { ExpressionOrValue } from '../../variables'
+import { Step, StepParent } from '../Step'
 
 export class AttachWorkspaceStep extends Step<'attach_workspace'> {
-  public at: string
+  public at: ExpressionOrValue<string>
 
-  constructor(at: string) {
+  constructor(at: ExpressionOrValue<string>) {
     super('attach_workspace')
     this.at = at
   }
 
-  toConfig() {
-    return { [this.type]: pickAttributesToConfig(this, ['at']) }
+  toConfig(context: ChildEntryConfigContext<StepParent>) {
+    return { [this.type]: pickAttributesToConfig(this, ['at'], context) }
   }
 }

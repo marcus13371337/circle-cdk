@@ -1,12 +1,19 @@
 import { pickAttributesToConfig } from '../../utils/pickAttributesToConfig'
-import { ChildEntry } from '../Entity'
+import { ChildEntry, ChildEntryConfigContext } from '../Entity'
+import { ExpressionOrValue } from '../variables'
+import { JobConfig } from './JobConfig'
 import { Workflow } from './Workflow'
 
-export class Filter extends ChildEntry<Workflow> {
-  public only: string | string[] | null = null
-  public ignore: string | string[] | null = null
+type Parent = Workflow | JobConfig
+export class Filter extends ChildEntry<Parent> {
+  public only: ExpressionOrValue<string> | ExpressionOrValue<string>[] | null =
+    null
+  public ignore:
+    | ExpressionOrValue<string>
+    | ExpressionOrValue<string>[]
+    | null = null
 
-  toConfig() {
-    return pickAttributesToConfig(this, ['only', 'ignore'])
+  toConfig(context: ChildEntryConfigContext<Parent>) {
+    return pickAttributesToConfig(this, ['only', 'ignore'], context)
   }
 }

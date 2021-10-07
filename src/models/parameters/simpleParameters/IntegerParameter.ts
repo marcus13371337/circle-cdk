@@ -1,18 +1,7 @@
-import { pickAttributesToConfig } from '../../../utils/pickAttributesToConfig'
-import { SimpleParameter } from './SimpleParameter'
+import { Parameter } from '../Parameter'
 
-export class IntegerParameter extends SimpleParameter {
-  public default: number | null = null
-
+export class IntegerParameter extends Parameter<number> {
   constructor() {
     super('integer')
-  }
-
-  toConfig() {
-    const result = pickAttributesToConfig(this, ['description', 'default'])
-
-    return Object.keys(result).length > 0
-      ? { type: this.type, ...result }
-      : this.type
   }
 }

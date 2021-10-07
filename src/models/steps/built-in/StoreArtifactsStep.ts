@@ -1,18 +1,24 @@
 import { pickAttributesToConfig } from '../../../utils/pickAttributesToConfig'
-import { Step } from '../Step'
+import { ChildEntryConfigContext } from '../../Entity'
+import { ExpressionOrValue } from '../../variables'
+import { Step, StepParent } from '../Step'
 
 export class StoreArtifactsStep extends Step {
-  public path: string
-  public destination: string | null = null
+  public path: ExpressionOrValue<string>
+  public destination: ExpressionOrValue<string> | null = null
 
   constructor(path: string) {
     super('store_artifacts')
     this.path = path
   }
 
-  toConfig() {
+  toConfig(context: ChildEntryConfigContext<StepParent>) {
     return {
-      [this.type]: pickAttributesToConfig(this, ['path', 'destination']),
+      [this.type]: pickAttributesToConfig(
+        this,
+        ['path', 'destination'],
+        context,
+      ),
     }
   }
 }

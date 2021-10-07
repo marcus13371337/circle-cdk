@@ -1,8 +1,8 @@
 import { pickAttributesToConfig } from '../../../utils/pickAttributesToConfig'
-import { SimpleParameter } from './SimpleParameter'
+import { ChildEntryConfigContext } from '../../Entity'
+import { Parameter, ParameterParent } from '../Parameter'
 
-export class EnumParameter extends SimpleParameter {
-  public default: string | null = null
+export class EnumParameter extends Parameter<string> {
   public enum: string[] = []
 
   constructor(enumValues: string[]) {
@@ -16,14 +16,14 @@ export class EnumParameter extends SimpleParameter {
     }
   }
 
-  toConfig() {
+  toConfig(context: ChildEntryConfigContext<ParameterParent>) {
     this.assertValid()
 
-    const result = pickAttributesToConfig(this, [
-      'description',
-      'default',
-      'enum',
-    ])
+    const result = pickAttributesToConfig(
+      this,
+      ['description', 'default', 'enum'],
+      context,
+    )
 
     return Object.keys(result).length > 0
       ? { type: this.type, ...result }

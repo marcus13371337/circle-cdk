@@ -3,7 +3,9 @@ import { pickAttributesToConfig } from '../../utils/pickAttributesToConfig'
 import { ChildEntry, ChildEntryConfigContext } from '../Entity'
 import { JobConfig } from './JobConfig'
 
-export class JobMatrix extends ChildEntry<JobConfig> {
+type Parent = JobConfig
+
+export class JobMatrix extends ChildEntry<Parent> {
   public parameters: Record<string, string[]> = {}
   public excludes: Record<string, string>[] = []
   public alias: string | null = null
@@ -53,10 +55,14 @@ export class JobMatrix extends ChildEntry<JobConfig> {
     })
   }
 
-  toConfig(context: ChildEntryConfigContext<JobConfig>) {
+  toConfig(context: ChildEntryConfigContext<Parent>) {
     this.assertValid(context)
 
-    const config: Config = pickAttributesToConfig(this, ['parameters', 'alias'])
+    const config: Config = pickAttributesToConfig(
+      this,
+      ['parameters', 'alias'],
+      context,
+    )
 
     if (this.excludes.length) {
       config.exclude = this.excludes

@@ -1,6 +1,7 @@
 import { Config } from '../../../types/Config'
 import { pickAttributesToConfig } from '../../../utils/pickAttributesToConfig'
-import { ChildEntry } from '../../Entity'
+import { ChildEntry, ChildEntryConfigContext } from '../../Entity'
+import { Job } from '../../Job'
 import { Executor } from '../Executor'
 
 interface Auth {
@@ -13,7 +14,9 @@ interface AwsAuth {
   awsSecretAccessKey: string
 }
 
-export class Docker extends ChildEntry<Executor> {
+type Parent = Executor | Job
+
+export class Docker extends ChildEntry<Parent> {
   public image: string
   public name: string | null = null
   public entrypoint: string | string[] | null = null
@@ -28,15 +31,12 @@ export class Docker extends ChildEntry<Executor> {
     this.image = image
   }
 
-  toConfig() {
-    const result: Config = pickAttributesToConfig(this, [
-      'name',
-      'entrypoint',
-      'command',
-      'user',
-      'auth',
-      'awsAuth',
-    ])
+  toConfig(context: ChildEntryConfigContext<Parent>) {
+    const result: Config = pickAttributesToConfig(
+      this,
+      ['name', 'entrypoint', 'command', 'user', 'auth', 'awsAuth'],
+      context,
+    )
 
     if (Object.keys(this.environment).length) {
       result.environment = this.environment

@@ -1,13 +1,15 @@
 import { Config } from '../types/Config'
+import { KeyMap } from '../types/KeyMap'
 import { listToConfig } from '../utils/listToConfig'
 import { ChildEntry, ChildEntryConfigContext } from './Entity'
 import { Parameter } from './parameters/Parameter'
 import { Pipeline } from './Pipeline'
 import { Step } from './steps/Step'
 
-export class Command extends ChildEntry<Pipeline> {
+type Parent = Pipeline
+export class Command extends ChildEntry<Parent> {
   public steps: Step[] = []
-  public parameters: Record<string, Parameter> = {}
+  public parameters: KeyMap<Parameter> = {}
   public description: string | null = null
 
   addStep(step: Step) {
@@ -19,7 +21,7 @@ export class Command extends ChildEntry<Pipeline> {
     this.parameters[name] = parameter
   }
 
-  assureValid() {
+  assertValid() {
     if (!this.steps.length) {
       throw new Error('Command with no steps')
     }
@@ -29,8 +31,8 @@ export class Command extends ChildEntry<Pipeline> {
     return Object.keys(this.parameters)
   }
 
-  toConfig(context: ChildEntryConfigContext<Pipeline>): Config {
-    this.assureValid()
+  toConfig(context: ChildEntryConfigContext<Parent>): Config {
+    this.assertValid()
 
     const result: Config = {}
 
@@ -54,7 +56,7 @@ export class Command extends ChildEntry<Pipeline> {
       for (const [parameterName, parameter] of Object.entries(
         this.parameters,
       )) {
-        result.parameters[parameterName] = parameter.toConfig(newContext)
+        result.parameters[parameterName] = parameter.toConfig(context)
       }
     }
 

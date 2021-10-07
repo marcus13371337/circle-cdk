@@ -2,7 +2,7 @@ import { LogicStatement } from './models/LogicStatement'
 import { Parameters } from './models/parameters/Parameters'
 import { Pipeline } from './models/Pipeline'
 import { Steps } from './models/steps/Steps'
-import { Variables } from './models/Variables'
+import { variables } from './models/variables'
 import { Filter } from './models/workflow/Filter'
 
 const pipeline = new Pipeline()
@@ -51,7 +51,10 @@ saveCacheStep.when = 'fail'
 when2Step.addStep(saveCacheStep)
 
 const restoreCacheStep = Steps.restoreCache()
-restoreCacheStep.keys = ['xxx', 'yyy']
+restoreCacheStep.keys = [
+  'xxx',
+  variables`test ${({ parameters }) => parameters['test-ing']}`,
+]
 restoreCacheStep.key = 'xaaa'
 restoreCacheStep.name = 'test'
 when2Step.addStep(restoreCacheStep)
@@ -87,6 +90,7 @@ pipeline.addParameter('test', Parameters.boolean())
 
 const job = pipeline.addJob('bla-bla')
 const docker = job.addDocker('blabla')
+pipeline.addOrb('orb', 'aws-cli@2.0.3')
 docker.user = 'root'
 job
   .addParameter('test-ing', stringParameter)
@@ -95,12 +99,18 @@ job
   .addParameter('bool', Parameters.boolean())
   .addStep(checkoutStep)
   .addStep(
-    Steps.run(
-      Variables.build(({ parameters }) => `checkout ${parameters.bool}`),
-    ),
+    Steps.run(variables`checkout ${({ pipeline }) => pipeline.project.gitUrl}`),
   )
   .addStep(testStep)
   .addStep(whenStep)
+  .addStep(
+    Steps.custom('blo', {
+      'my-weird-variable': 'testing',
+    }),
+  )
+
+const command = pipeline.addCommand('blo')
+command.addParameter('my-weird-variable', Parameters.boolean())
 
 job.circleciIpRanges = true
 job.environment = {
@@ -132,15 +142,18 @@ matrix.addExclude({
   hejhej: '11',
 })
 matrix.alias = 'tsetet'
+const test = Steps.run(
+  variables`checkout ${({ parameters }) =>
+    `${parameters.version} ${parameters.hejhej}`}`,
+)
+
+test.environment = {
+  MY_VAR: variables`bla`,
+  MY_VAR2: variables`test ${({ parameters }) =>
+    `${parameters.version} ${parameters.hejhej}`}`,
+}
 jobConfig
-  .addPreStep(
-    Steps.run(
-      Variables.build(
-        ({ parameters }) =>
-          `checkout ${parameters.version} ${parameters.hejhej}`,
-      ),
-    ),
-  )
+  .addPreStep(test)
   .addPreStep(checkoutStep)
   .addPostStep(checkoutStep)
   .addPostStep(checkoutStep)

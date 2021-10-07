@@ -1,6 +1,13 @@
 import { Config } from '../types/Config'
 import { snakeCase } from 'snake-case'
-export const pickAttributesToConfig = <T>(object: T, keys: Array<keyof T>) => {
+import { ChildEntryConfigContext } from '../models/Entity'
+import { compileExpression, ExpressionOrValue } from '../models/variables'
+import { KeyMap } from '../types/KeyMap'
+export const pickAttributesToConfig = <T>(
+  object: T,
+  keys: Array<keyof T>,
+  context: ChildEntryConfigContext<unknown>,
+) => {
   const result: Config = {}
 
   keys.forEach((key) => {
@@ -10,7 +17,23 @@ export const pickAttributesToConfig = <T>(object: T, keys: Array<keyof T>) => {
       Object.keys(object[key]).length === 0
 
     if (object[key] && !isEmptyObject) {
-      result[snakeCase(key as string)] = object[key] as unknown as Config
+      const value = object[key] as unknown as
+        | ExpressionOrValue
+        | ExpressionOrValue[]
+        | KeyMap<ExpressionOrValue>
+      if (Array.isArray(value)) {
+        result[snakeCase(key as string)] = value.map((value) =>
+          compileExpression(value, context),
+        )
+      } else if (typeof value === 'object') {
+        const obj: Config = {}
+        Object.entries(value).forEach(([key, value]) => {
+          obj[key] = compileExpression(value, context)
+        })
+        result[snakeCase(key as string)] = obj
+      } else {
+        result[snakeCase(key as string)] = compileExpression(value, context)
+      }
     }
   })
 

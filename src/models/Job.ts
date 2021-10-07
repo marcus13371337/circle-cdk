@@ -1,5 +1,6 @@
 import { Config } from '../types/Config'
 import { EntryParameters } from '../types/EntryParameters'
+import { KeyMap } from '../types/KeyMap'
 import { listToConfig } from '../utils/listToConfig'
 import { pickAttributesToConfig } from '../utils/pickAttributesToConfig'
 import { recordToConfig } from '../utils/recordToConfig'
@@ -7,21 +8,23 @@ import { ChildEntry, ChildEntryConfigContext } from './Entity'
 import { Docker } from './executor/machines/Docker'
 import { Machine } from './executor/machines/Machine'
 import { MacOS } from './executor/machines/MacOS'
-import { SimpleParameter } from './parameters/simpleParameters/SimpleParameter'
+import { Parameter } from './parameters/Parameter'
 import { Pipeline } from './Pipeline'
 import { Step } from './steps/Step'
+import { ExpressionOrValue } from './variables'
 
-export class Job extends ChildEntry<Pipeline> {
+type Parent = Pipeline
+export class Job extends ChildEntry<Parent> {
   private docker: Docker[] = []
-  private machine: Record<string, Machine> = {}
-  private macos: Record<string, MacOS> = {}
-  public shell: string | null = null
-  private parameters: Record<string, SimpleParameter> = {}
+  private machine: KeyMap<Machine> = {}
+  private macos: KeyMap<MacOS> = {}
+  public shell: ExpressionOrValue<string> | null = null
+  private parameters: KeyMap<Parameter> = {}
   public steps: Step[] = []
-  public workingDirectory: string | null = null
-  public parallelism: number | null = null
-  public environment: Record<string, string> = {}
-  public resourceClass: string | null = null
+  public workingDirectory: ExpressionOrValue<string> | null = null
+  public parallelism: ExpressionOrValue<number> | null = null
+  public environment: KeyMap<ExpressionOrValue> = {}
+  public resourceClass: ExpressionOrValue<string> | null = null
   public circleciIpRanges = false
 
   addStep(step: Step) {
@@ -47,7 +50,7 @@ export class Job extends ChildEntry<Pipeline> {
     return macOS
   }
 
-  addParameter(parameterName: string, parameter: SimpleParameter) {
+  addParameter(parameterName: string, parameter: Parameter) {
     this.parameters[parameterName] = parameter
     return this
   }
@@ -67,7 +70,7 @@ export class Job extends ChildEntry<Pipeline> {
     }
   }
 
-  toConfig(context: ChildEntryConfigContext<Pipeline>) {
+  toConfig(context: ChildEntryConfigContext<Parent>) {
     this.assertValid()
 
     const newContext: ChildEntryConfigContext<Job> = {
@@ -80,14 +83,18 @@ export class Job extends ChildEntry<Pipeline> {
     }
 
     const result: Config = {
-      ...pickAttributesToConfig(this, [
-        'shell',
-        'workingDirectory',
-        'parallelism',
-        'environment',
-        'resourceClass',
-        'circleciIpRanges',
-      ]),
+      ...pickAttributesToConfig(
+        this,
+        [
+          'shell',
+          'workingDirectory',
+          'parallelism',
+          'environment',
+          'resourceClass',
+          'circleciIpRanges',
+        ],
+        context,
+      ),
     }
 
     if (this.docker.length) {

@@ -1,4 +1,4 @@
-import { snakeCase } from 'change-case'
+import { ChildEntryConfigContext } from './Entity'
 
 const escape = (name: string) => `<< ${name} >>`
 
@@ -25,14 +25,27 @@ interface AvailableVariables {
   parameters: Parameters
 }
 
-export type Compiler = (params: {
+export type Expression = (params: {
   pipelineParameterNames: string[]
   parameterNames: string[]
 }) => string
 
-export const isCompiler = (
-  compiler: Compiler | string | number | boolean,
-): compiler is Compiler => typeof compiler === 'function'
+export type ExpressionOrValue<T = string | number | boolean> = Expression | T
+
+const isExpression = (
+  expression: ExpressionOrValue,
+): expression is Expression => typeof expression === 'function'
+
+export const compileExpression = <T>(
+  expression: ExpressionOrValue,
+  context: ChildEntryConfigContext<T>,
+) =>
+  isExpression(expression)
+    ? expression({
+        pipelineParameterNames: context.pipeline.getParameterNames(),
+        parameterNames: context.availableParameters,
+      })
+    : expression
 
 const createParametersProxy = (
   availableNames: string[],
@@ -54,36 +67,48 @@ const createParametersProxy = (
   return obj
 }
 
-export class Variables {
-  public static build(builder: (args: AvailableVariables) => string): Compiler {
-    return ({ pipelineParameterNames, parameterNames }) => {
-      const pipelineParameters = createParametersProxy(
-        pipelineParameterNames,
-        'pipeline.parameters',
-      )
+type StringBuilder = (args: AvailableVariables) => string
 
-      const parameters = createParametersProxy(parameterNames, 'parameters')
+export const variables = (
+  strings: TemplateStringsArray,
+  ...builders: StringBuilder[]
+): Expression => {
+  return ({ pipelineParameterNames, parameterNames }) => {
+    const pipelineParameters = createParametersProxy(
+      pipelineParameterNames,
+      'pipeline.parameters',
+    )
 
-      const args: AvailableVariables = {
-        pipeline: {
-          id: escape('pipeline.id'),
-          number: escape('pipeline.number'),
-          project: {
-            gitUrl: escape('pipeline.project.git_url'),
-            type: escape('pipeline.project.type'),
-          },
-          git: {
-            tag: escape('pipeline.git.tag'),
-            branch: escape('pipeline.git.branch'),
-            revision: escape('pipeline.git.revision'),
-            baseRevision: escape('pipeline.git.base_revision'),
-          },
-          parameters: pipelineParameters,
+    const parameters = createParametersProxy(parameterNames, 'parameters')
+
+    const args: AvailableVariables = {
+      pipeline: {
+        id: escape('pipeline.id'),
+        number: escape('pipeline.number'),
+        project: {
+          gitUrl: escape('pipeline.project.git_url'),
+          type: escape('pipeline.project.type'),
         },
-        parameters,
-      }
-
-      return builder(args)
+        git: {
+          tag: escape('pipeline.git.tag'),
+          branch: escape('pipeline.git.branch'),
+          revision: escape('pipeline.git.revision'),
+          baseRevision: escape('pipeline.git.base_revision'),
+        },
+        parameters: pipelineParameters,
+      },
+      parameters,
     }
+
+    const result: string[] = []
+
+    strings.forEach((string, index) => {
+      result.push(string)
+      if (builders.length > index) {
+        result.push(builders[index](args))
+      }
+    })
+
+    return result.join('')
   }
 }

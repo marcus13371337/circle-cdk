@@ -2,12 +2,18 @@ import { EntryParameters } from '../../types/EntryParameters'
 import { listToConfig } from '../../utils/listToConfig'
 import { pickAttributesToConfig } from '../../utils/pickAttributesToConfig'
 import { ChildEntry, ChildEntryConfigContext } from '../Entity'
-import { BasicLogicStatement, compile, LogicStatement } from '../LogicStatement'
+import {
+  BasicLogicStatement,
+  compileStatement,
+  LogicStatement,
+} from '../LogicStatement'
 import { Pipeline } from '../Pipeline'
 import { JobConfig } from './JobConfig'
 import { WorkflowTrigger } from './WorkflowTrigger'
 
-export class Workflow extends ChildEntry<Pipeline> {
+type Parent = Pipeline
+
+export class Workflow extends ChildEntry<Parent> {
   public version = '2'
   public triggers: WorkflowTrigger[] = []
   public jobs: Array<JobConfig> = []
@@ -31,27 +37,27 @@ export class Workflow extends ChildEntry<Pipeline> {
     }
   }
 
-  toConfig(params: ChildEntryConfigContext<Pipeline>) {
+  toConfig(context: ChildEntryConfigContext<Parent>) {
     this.assertValid()
 
-    const result = pickAttributesToConfig(this, ['version'])
+    const result = pickAttributesToConfig(this, ['version'], context)
 
-    const newParams = { ...params, parent: this }
+    const newContext = { ...context, parent: this }
 
     if (this.when) {
-      result.when = compile(this.when, newParams)
+      result.when = compileStatement(this.when, newContext)
     }
 
     if (this.unless) {
-      result.unless = compile(this.unless, newParams)
+      result.unless = compileStatement(this.unless, newContext)
     }
 
     if (this.triggers.length) {
-      result.triggers = listToConfig(this.triggers, newParams)
+      result.triggers = listToConfig(this.triggers, newContext)
     }
 
     if (Object.keys(this.jobs).length) {
-      result.jobs = listToConfig(this.jobs, newParams)
+      result.jobs = listToConfig(this.jobs, newContext)
     }
 
     return result

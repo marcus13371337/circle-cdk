@@ -3,7 +3,7 @@ import { listToConfig } from '../../../utils/listToConfig'
 import { ChildEntryConfigContext } from '../../Entity'
 import {
   BasicLogicStatement,
-  compile,
+  compileStatement,
   LogicStatement,
 } from '../../LogicStatement'
 import { Step, StepConfigParams } from '../Step'
@@ -36,7 +36,7 @@ export class WhenStep extends Step {
     }
 
     return {
-      condition: compile(this.condition, newContext),
+      condition: compileStatement(this.condition, newContext),
       steps: listToConfig(this.steps, newContext),
     }
   }

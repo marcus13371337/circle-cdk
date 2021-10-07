@@ -1,15 +1,17 @@
 import { pickAttributesToConfig } from '../../../utils/pickAttributesToConfig'
-import { Step } from '../Step'
+import { ChildEntryConfigContext } from '../../Entity'
+import { ExpressionOrValue } from '../../variables'
+import { Step, StepParent } from '../Step'
 
 export class AddSSHKeysStep extends Step<'add_ssh_keys'> {
-  public fingerprints: string[] | null = null
+  public fingerprints: ExpressionOrValue<string>[] | null = null
 
   constructor() {
     super('add_ssh_keys')
   }
 
-  toConfig() {
-    const result = pickAttributesToConfig(this, ['fingerprints'])
+  toConfig(context: ChildEntryConfigContext<StepParent>) {
+    const result = pickAttributesToConfig(this, ['fingerprints'], context)
 
     return Object.keys(result).length > 0 ? { [this.type]: result } : this.type
   }

@@ -1,11 +1,13 @@
 import { pickAttributesToConfig } from '../../../utils/pickAttributesToConfig'
-import { Step } from '../Step'
+import { ChildEntryConfigContext } from '../../Entity'
+import { ExpressionOrValue } from '../../variables'
+import { Step, StepParent } from '../Step'
 
 export class SaveCacheStep extends Step {
-  public paths: string[]
-  public key: string
-  public name: string | null = null
-  public when: string | null = null
+  public paths: ExpressionOrValue<string>[]
+  public key: ExpressionOrValue<string>
+  public name: ExpressionOrValue<string> | null = null
+  public when: ExpressionOrValue<string> | null = null
 
   constructor(paths: string[], key: string) {
     super('save_cache')
@@ -13,14 +15,13 @@ export class SaveCacheStep extends Step {
     this.key = key
   }
 
-  toConfig() {
+  toConfig(context: ChildEntryConfigContext<StepParent>) {
     return {
-      [this.type]: pickAttributesToConfig(this, [
-        'paths',
-        'key',
-        'name',
-        'when',
-      ]),
+      [this.type]: pickAttributesToConfig(
+        this,
+        ['paths', 'key', 'name', 'when'],
+        context,
+      ),
     }
   }
 }

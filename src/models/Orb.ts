@@ -2,14 +2,14 @@ import { ChildEntry } from './Entity'
 import { Pipeline } from './Pipeline'
 
 export class Orb extends ChildEntry<Pipeline> {
-  public name: string
+  public nameAndVersion: string
 
-  constructor(name: string) {
+  constructor(nameAndVersion: string) {
     super()
-    this.name = name
+    this.nameAndVersion = nameAndVersion
   }
 
   toConfig() {
-    return this.name
+    return this.nameAndVersion
   }
 }

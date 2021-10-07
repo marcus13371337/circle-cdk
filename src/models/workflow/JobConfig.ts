@@ -6,7 +6,9 @@ import { Filter } from './Filter'
 import { JobMatrix } from './JobMatrix'
 import { Workflow } from './Workflow'
 
-export class JobConfig extends ChildEntry<Workflow> {
+type Parent = Workflow
+
+export class JobConfig extends ChildEntry<Parent> {
   public jobName: string
   public name: string | null = null
   public requires: string[] = []
@@ -48,8 +50,8 @@ export class JobConfig extends ChildEntry<Workflow> {
     return this.matrix
   }
 
-  toConfig(context: ChildEntryConfigContext<Workflow>) {
-    const config = pickAttributesToConfig(this, ['name', 'type'])
+  toConfig(context: ChildEntryConfigContext<Parent>) {
+    const config = pickAttributesToConfig(this, ['name', 'type'], context)
 
     const newContext: ChildEntryConfigContext<JobConfig> = {
       ...context,
@@ -72,11 +74,11 @@ export class JobConfig extends ChildEntry<Workflow> {
       config.filters = {}
 
       if (this.branchFilter) {
-        config.filters.branches = this.branchFilter.toConfig()
+        config.filters.branches = this.branchFilter.toConfig(newContext)
       }
 
       if (this.tagFilter) {
-        config.filters.tags = this.tagFilter.toConfig()
+        config.filters.tags = this.tagFilter.toConfig(newContext)
       }
     }
 
