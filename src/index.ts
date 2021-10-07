@@ -19,7 +19,7 @@ testStep.name = 'yooo'
 testStep.shell = 'aaaa'
 testStep.background = true
 
-testStep.when = 'on_success'
+testStep.when = variables`on_successaaa`
 
 const checkoutStep = Steps.checkout()
 checkoutStep.path = 'xxx'

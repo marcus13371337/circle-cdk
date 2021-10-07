@@ -67,11 +67,11 @@ const createParametersProxy = (
   return obj
 }
 
-type StringBuilder = (args: AvailableVariables) => string
+type ParameterComposer = (args: AvailableVariables) => string
 
 export const variables = (
   strings: TemplateStringsArray,
-  ...builders: StringBuilder[]
+  ...builders: ParameterComposer[]
 ): Expression => {
   return ({ pipelineParameterNames, parameterNames }) => {
     const pipelineParameters = createParametersProxy(
