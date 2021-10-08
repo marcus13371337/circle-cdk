@@ -9,7 +9,10 @@ export class SaveCacheStep extends Step {
   public name: ExpressionOrValue<string> | null = null
   public when: ExpressionOrValue<string> | null = null
 
-  constructor(paths: string[], key: string) {
+  constructor(
+    paths: ExpressionOrValue<string>[],
+    key: ExpressionOrValue<string>,
+  ) {
     super('save_cache')
     this.paths = paths
     this.key = key

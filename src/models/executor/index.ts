@@ -1,0 +1,5 @@
+export { Executor } from './Executor'
+export { Docker } from './machines/Docker'
+export { Machine } from './machines/Machine'
+export { MacOS } from './machines/MacOS'
+export { Windows } from './machines/Windows'
