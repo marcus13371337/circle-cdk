@@ -51,7 +51,7 @@ export class Command extends ChildEntry<Parent> {
 
     result.steps = listToConfig(this.steps, newContext)
 
-    if (this.parameters.length) {
+    if (Object.keys(this.parameters).length) {
       result.parameters = {}
       for (const [parameterName, parameter] of Object.entries(
         this.parameters,

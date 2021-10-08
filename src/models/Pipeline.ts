@@ -50,6 +50,10 @@ export class Pipeline extends Entry {
     return this
   }
 
+  public getParameterNames() {
+    return Object.keys(this.parameters)
+  }
+
   public addExecutor(
     executorName: string,
     ...executorParams: EntryParameters<typeof Executor>
@@ -68,14 +72,14 @@ export class Pipeline extends Entry {
     return job
   }
 
+  public getJobs() {
+    return this.jobs
+  }
+
   public addWorkflow(workflowName: string) {
     const workflow = new Workflow()
     this.workflows[workflowName] = workflow
     return workflow
-  }
-
-  public getParameterNames() {
-    return Object.keys(this.parameters)
   }
 
   private assertValid() {
@@ -134,6 +138,10 @@ export class Pipeline extends Entry {
 
     if (Object.keys(this.jobs).length) {
       result.jobs = recordToConfig(this.jobs, context)
+    }
+
+    if (Object.keys(this.commands).length) {
+      result.commands = recordToConfig(this.commands, context)
     }
 
     return result

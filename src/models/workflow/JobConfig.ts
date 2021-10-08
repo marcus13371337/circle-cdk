@@ -50,7 +50,17 @@ export class JobConfig extends ChildEntry<Parent> {
     return this.matrix
   }
 
+  private assertValid(context: ChildEntryConfigContext<Parent>) {
+    const pipelineJobs = context.pipeline.getJobs()
+
+    if (!pipelineJobs[this.jobName]) {
+      throw new Error(`Job ${this.jobName} is not defined in pipeline`)
+    }
+  }
+
   toConfig(context: ChildEntryConfigContext<Parent>) {
+    this.assertValid(context)
+
     const config = pickAttributesToConfig(this, ['name', 'type'], context)
 
     const newContext: ChildEntryConfigContext<JobConfig> = {
@@ -86,10 +96,10 @@ export class JobConfig extends ChildEntry<Parent> {
       config.matrix = this.matrix.toConfig(newContext)
     }
 
-    if (this.preSteps) {
+    if (this.preSteps.length) {
       config['pre-steps'] = listToConfig(this.preSteps, newContext)
     }
-    if (this.postSteps) {
+    if (this.postSteps.length) {
       config['post-steps'] = listToConfig(this.postSteps, newContext)
     }
 

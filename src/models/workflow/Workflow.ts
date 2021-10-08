@@ -14,9 +14,9 @@ import { WorkflowTrigger } from './WorkflowTrigger'
 type Parent = Pipeline
 
 export class Workflow extends ChildEntry<Parent> {
-  public version = '2'
+  public version: number | null = null
   public triggers: WorkflowTrigger[] = []
-  public jobs: Array<JobConfig> = []
+  public jobConfigs: JobConfig[] = []
   public when: LogicStatement | BasicLogicStatement | null = null
   public unless: LogicStatement | BasicLogicStatement | null = null
 
@@ -25,14 +25,14 @@ export class Workflow extends ChildEntry<Parent> {
     return this
   }
 
-  addJob(jobName: string) {
-    const job = new JobConfig(jobName)
-    this.jobs = [...this.jobs, job]
-    return job
+  addJobConfig(jobName: string) {
+    const jobConfig = new JobConfig(jobName)
+    this.jobConfigs = [...this.jobConfigs, jobConfig]
+    return jobConfig
   }
 
   assertValid() {
-    if (!this.jobs.length) {
+    if (!this.jobConfigs.length) {
       throw new Error('A workflow must have at least one job')
     }
   }
@@ -56,8 +56,8 @@ export class Workflow extends ChildEntry<Parent> {
       result.triggers = listToConfig(this.triggers, newContext)
     }
 
-    if (Object.keys(this.jobs).length) {
-      result.jobs = listToConfig(this.jobs, newContext)
+    if (Object.keys(this.jobConfigs).length) {
+      result.jobs = listToConfig(this.jobConfigs, newContext)
     }
 
     return result
