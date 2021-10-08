@@ -12,9 +12,6 @@
   "keywords": [
     "circleci"
   ],
-  "files": [
-    "./dist/**/*"
-  ],
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
