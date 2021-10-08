@@ -2,7 +2,8 @@
   "name": "circleci-cdk",
   "version": "1.0.0",
   "description": "A CDK-toolkit for creating CircleCI-pipelines",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types":"dist/index.d.ts",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
