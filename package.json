@@ -1,6 +1,6 @@
 {
   "name": "circleci-cdk",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A CDK-toolkit for creating CircleCI-pipelines",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,7 +12,9 @@
   "keywords": [
     "circleci"
   ],
-  "files": ["./dist"],
+  "files": [
+    "./dist"
+  ],
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
