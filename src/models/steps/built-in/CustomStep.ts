@@ -54,7 +54,7 @@ export class CustomStep extends Step {
   toConfig(context: ChildEntryConfigContext<StepParent>) {
     this.assertValid(context)
 
-    return Object.keys(this.params)
+    return Object.keys(this.params).length
       ? {
           [this.type]: this.params,
         }
