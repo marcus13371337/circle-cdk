@@ -51,6 +51,16 @@ export class JobConfig extends ChildEntry<Parent> {
     return this.matrix
   }
 
+  addBranchFilter(customize?: Customizer<Filter>) {
+    this.branchFilter = customizeObject(new Filter(), customize)
+    return this.branchFilter
+  }
+
+  addTagFilter(customize?: Customizer<Filter>) {
+    this.tagFilter = customizeObject(new Filter(), customize)
+    return this.tagFilter
+  }
+
   addParameter(parameterName: string, value: ExpressionOrValue) {
     this.parameters[parameterName] = value
     return this
