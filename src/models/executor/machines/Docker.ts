@@ -40,8 +40,6 @@ export class Docker extends ChildEntry<Parent> {
       result.environment = this.environment
     }
 
-    return Object.keys(result).length
-      ? { image: this.image, ...result }
-      : this.image
+    return { image: this.image, ...result }
   }
 }
