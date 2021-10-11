@@ -1,5 +1,6 @@
 import { Config } from '../types/Config'
 import { KeyMap } from '../types/KeyMap'
+import { customizeObject, Customizer } from '../utils/customizeObject'
 import { listToConfig } from '../utils/listToConfig'
 import { ChildEntry, ChildEntryConfigContext } from './Entity'
 import { Parameter } from './parameters/Parameter'
@@ -12,13 +13,18 @@ export class Command extends ChildEntry<Parent> {
   public parameters: KeyMap<Parameter> = {}
   public description: string | null = null
 
-  addStep(step: Step) {
-    this.steps = [...this.steps, step]
+  addStep<T extends Step>(step: T, customize?: Customizer<T>) {
+    this.steps = [...this.steps, customizeObject(step, customize)]
     return this
   }
 
-  addParameter(name: string, parameter: Parameter) {
-    this.parameters[name] = parameter
+  addParameter<T extends Parameter>(
+    name: string,
+    parameter: T,
+    customize?: Customizer<Parameter>,
+  ) {
+    this.parameters[name] = customizeObject(parameter, customize)
+    return this
   }
 
   assertValid() {

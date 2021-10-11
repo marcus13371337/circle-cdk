@@ -1,7 +1,8 @@
+import { customizeObject, Customizer } from '../utils/customizeObject'
 import { pickAttributesToConfig } from '../utils/pickAttributesToConfig'
 import { ChildEntry, ChildEntryConfigContext } from './Entity'
 import { Step } from './steps/Step'
-import { compileExpression, Expression, ExpressionOrValue } from './variables'
+import { compileExpression, ExpressionOrValue } from './variables'
 import { Workflow } from './workflow/Workflow'
 
 interface Matcher {
@@ -11,7 +12,7 @@ interface Matcher {
 
 export type BasicLogicStatement = ExpressionOrValue
 
-type Statement = LogicStatement | BasicLogicStatement
+export type Statement = LogicStatement | BasicLogicStatement
 
 export const isLogicStatement = (
   statement: Statement,
@@ -30,13 +31,13 @@ export class LogicStatement extends ChildEntry<
     this.equal.push(value)
   }
 
-  addOr(statement: Statement) {
-    this.or = [...this.or, statement]
+  addOr<T extends Statement>(statement: T, customize?: Customizer<T>) {
+    this.or = [...this.or, customizeObject(statement, customize)]
     return this
   }
 
-  addAnd(statement: Statement) {
-    this.and = [...this.and, statement]
+  addAnd<T extends Statement>(statement: T, customize?: Customizer<T>) {
+    this.and = [...this.and, customizeObject(statement, customize)]
     return this
   }
 

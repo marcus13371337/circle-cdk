@@ -15,13 +15,16 @@ yarn add circleci-cdk -D
 ## Examples
 ### Hello world pipeline
 ```ts
-const pipeline = new Pipeline()
-const workflow = pipeline.addWorkflow('my-workflow')
-workflow.addJobConfig('hello-world')
+const pipeline = Pipeline.create((pipeline) => {
+  pipeline.addWorkflow('my-workflow', (workflow) => {
+    workflow.addJobConfig('hello-world')
+  })
 
-const job = pipeline.addJob('hello-world')
-job.addDocker('cimg/node:14.17')
-job.addStep(Steps.run(`echo "Hello World"`))
+  pipeline.addJob('hello-world', (job) => {
+    job.addDocker('cimg/node:14.17')
+    job.addStep(Steps.run(`echo "Hello World"`))
+  })
+})
 console.log(pipeline.toConfigString())
 ```
 The code above will print:
@@ -41,17 +44,23 @@ jobs:
 
 ### Add configuration
 ```ts
-const pipeline = new Pipeline()
-const workflow = pipeline.addWorkflow('my-workflow')
-const jobConfig = workflow.addJobConfig('hello-world')
-jobConfig.contexts = ['my-context']
+const pipeline = Pipeline.create((pipeline) => {
+  pipeline.addWorkflow('my-workflow', (workflow) => {
+    workflow.addJobConfig('hello-world', (jobConfig) => {
+      jobConfig.contexts = ['my-context']
+    })
+  })
 
-const job = pipeline.addJob('hello-world')
-job.addDocker('cimg/node:14.17')
+  pipeline.addJob('hello-world', (job) => {
+    job.addDocker('cimg/node:14.17')
 
-const echoStep = Steps.run(`echo "Hello World"`)
-echoStep.workingDirectory = '/my-project'
-job.addStep(echoStep)
+    job.addStep(
+      Steps.run(`echo "Hello World"`, (step) => {
+        step.workingDirectory = '/my-project'
+      }),
+    )
+  })
+})
 console.log(pipeline.toConfigString())
 ```
 will generate
@@ -74,27 +83,31 @@ jobs:
 
 ### Using variables
 ```ts
-const pipeline = new Pipeline()
-const workflow = pipeline.addWorkflow('my-workflow')
-workflow.addJobConfig('hello-world')
+const pipeline = Pipeline.create((pipeline) => {
+  pipeline.addWorkflow('my-workflow', (workflow) => {
+    workflow.addJobConfig('hello-world')
+  })
 
-const job = pipeline.addJob('hello-world')
-job.addDocker('cimg/node:14.17')
+  pipeline.addJob('hello-world', (job) => {
+    job.addDocker('cimg/node:14.17')
 
-const myCommand = pipeline.addCommand('my-command')
-myCommand.addParameter('name', Parameters.string())
-myCommand.addStep(
-  Steps.run(
-    variables`echo "hello ${({ parameters }) =>
-      parameters.name} in pipeline ${({ pipeline }) => pipeline.id}"`,
-  ),
-)
+    job.addStep(
+      Steps.custom('my-command', {
+        name: 'Joe',
+      }),
+    )
+  })
 
-job.addStep(
-  Steps.custom('my-command', {
-    name: 'Joe',
-  }),
-)
+  pipeline.addCommand('my-command', (command) => {
+    command.addParameter('name', Parameters.string())
+    command.addStep(
+      Steps.run(
+        variables`echo "hello ${({ parameters }) =>
+          parameters.name} in pipeline ${({ pipeline }) => pipeline.id}"`,
+      ),
+    )
+  })
+})
 console.log(pipeline.toConfigString())
 ```
 will generate

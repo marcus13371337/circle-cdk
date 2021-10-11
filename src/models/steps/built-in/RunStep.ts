@@ -1,11 +1,7 @@
 import { KeyMap } from '../../../types/KeyMap'
 import { pickAttributesToConfig } from '../../../utils/pickAttributesToConfig'
 import { ChildEntryConfigContext } from '../../Entity'
-import {
-  compileExpression,
-  Expression,
-  ExpressionOrValue,
-} from '../../variables'
+import { compileExpression, ExpressionOrValue } from '../../variables'
 import { Step, StepParent } from '../Step'
 
 export class RunStep extends Step {
@@ -19,7 +15,7 @@ export class RunStep extends Step {
   public when: ExpressionOrValue<'always' | 'on_success' | 'on_fail'> | null =
     null
 
-  constructor(command: string | Expression) {
+  constructor(command: ExpressionOrValue<string>) {
     super('run')
     this.command = command
   }

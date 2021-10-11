@@ -6,7 +6,7 @@ import { Step, StepParent } from '../Step'
 export class StoreTestResultsStep extends Step {
   public path: ExpressionOrValue<string>
 
-  constructor(path: string) {
+  constructor(path: ExpressionOrValue<string>) {
     super('store_test_results')
     this.path = path
   }

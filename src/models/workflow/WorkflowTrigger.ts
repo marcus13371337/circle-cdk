@@ -1,4 +1,5 @@
 import { Config } from '../../types/Config'
+import { customizeObject, Customizer } from '../../utils/customizeObject'
 import { ChildEntry, ChildEntryConfigContext } from '../Entity'
 import { compileExpression, ExpressionOrValue } from '../variables'
 import { Filter } from './Filter'
@@ -9,10 +10,10 @@ export class WorkflowTrigger extends ChildEntry<Parent> {
   public cron: ExpressionOrValue<string>
   public filter: Filter
 
-  constructor(cron: string, filter: Filter) {
+  constructor(cron: string, filterCustomizer?: Customizer<Filter>) {
     super()
     this.cron = cron
-    this.filter = filter
+    this.filter = customizeObject(new Filter(), filterCustomizer)
   }
 
   toConfig(context: ChildEntryConfigContext<Parent>) {

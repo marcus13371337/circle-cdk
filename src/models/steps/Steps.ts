@@ -1,8 +1,10 @@
-import { EntryParameters } from '../../types/EntryParameters'
+import { customizeObject, Customizer } from '../../utils/customizeObject'
+import { Statement } from '../LogicStatement'
+import { ExpressionOrValue } from '../variables'
 import { AddSSHKeysStep } from './built-in/AddSSHKeys'
 import { AttachWorkspaceStep } from './built-in/AttachWorkspaceStep'
 import { CheckoutStep } from './built-in/CheckoutStep'
-import { CustomStep } from './built-in/CustomStep'
+import { CustomStep, CustomStepParams } from './built-in/CustomStep'
 import { PersistToWorkspaceStep } from './built-in/PersistToWorkspaceStep'
 import { RestoreCacheStep } from './built-in/RestoreCacheStep'
 import { RunStep } from './built-in/RunStep'
@@ -13,48 +15,64 @@ import { StoreTestResultsStep } from './built-in/StoreTestResultsStep'
 import { WhenStep } from './built-in/WhenStep'
 
 export class Steps {
-  static addSSHKeys(...params: EntryParameters<typeof AddSSHKeysStep>) {
-    return new AddSSHKeysStep(...params)
+  static addSSHKeys(customizer?: Customizer<AddSSHKeysStep>) {
+    return customizeObject(new AddSSHKeysStep(), customizer)
   }
   static attachWorkspace(
-    ...params: EntryParameters<typeof AttachWorkspaceStep>
+    at: string,
+    customizer?: Customizer<AttachWorkspaceStep>,
   ) {
-    return new AttachWorkspaceStep(...params)
+    return customizeObject(new AttachWorkspaceStep(at), customizer)
   }
-  static checkout(...params: EntryParameters<typeof CheckoutStep>) {
-    return new CheckoutStep(...params)
+  static checkout(customizer?: Customizer<CheckoutStep>) {
+    return customizeObject(new CheckoutStep(), customizer)
   }
-  static custom(...params: EntryParameters<typeof CustomStep>) {
-    return new CustomStep(...params)
+  static custom(
+    type: string,
+    params?: CustomStepParams,
+    customizer?: Customizer<CustomStep>,
+  ) {
+    return customizeObject(new CustomStep(type, params), customizer)
   }
   static persistToWorkspace(
-    ...params: EntryParameters<typeof PersistToWorkspaceStep>
+    root: ExpressionOrValue<string>,
+    paths: ExpressionOrValue<string>[],
+    customizer?: Customizer<PersistToWorkspaceStep>,
   ) {
-    return new PersistToWorkspaceStep(...params)
+    return customizeObject(new PersistToWorkspaceStep(root, paths), customizer)
   }
-  static restoreCache(...params: EntryParameters<typeof RestoreCacheStep>) {
-    return new RestoreCacheStep(...params)
+  static restoreCache(customizer?: Customizer<RestoreCacheStep>) {
+    return customizeObject(new RestoreCacheStep(), customizer)
   }
-  static run(...params: EntryParameters<typeof RunStep>) {
-    return new RunStep(...params)
-  }
-  static saveCache(...params: EntryParameters<typeof SaveCacheStep>) {
-    return new SaveCacheStep(...params)
-  }
-  static setupRemoteDocker(
-    ...params: EntryParameters<typeof SetupRemoteDockerStep>
+  static run(
+    command: ExpressionOrValue<string>,
+    customizer?: Customizer<RunStep>,
   ) {
-    return new SetupRemoteDockerStep(...params)
+    return customizeObject(new RunStep(command), customizer)
   }
-  static storeArtifacts(...params: EntryParameters<typeof StoreArtifactsStep>) {
-    return new StoreArtifactsStep(...params)
+  static saveCache(
+    paths: ExpressionOrValue<string>[],
+    key: ExpressionOrValue<string>,
+    customizer?: Customizer<SaveCacheStep>,
+  ) {
+    return customizeObject(new SaveCacheStep(paths, key), customizer)
+  }
+  static setupRemoteDocker(customizer?: Customizer<SetupRemoteDockerStep>) {
+    return customizeObject(new SetupRemoteDockerStep(), customizer)
+  }
+  static storeArtifacts(
+    path: ExpressionOrValue<string>,
+    customizer?: Customizer<StoreArtifactsStep>,
+  ) {
+    return customizeObject(new StoreArtifactsStep(path), customizer)
   }
   static storeTestResults(
-    ...params: EntryParameters<typeof StoreTestResultsStep>
+    path: ExpressionOrValue<string>,
+    customizer?: Customizer<StoreTestResultsStep>,
   ) {
-    return new StoreTestResultsStep(...params)
+    return customizeObject(new StoreTestResultsStep(path), customizer)
   }
-  static when(...params: EntryParameters<typeof WhenStep>) {
-    return new WhenStep(...params)
+  static when(condition: Statement, customizer?: Customizer<WhenStep>) {
+    return customizeObject(new WhenStep(condition), customizer)
   }
 }

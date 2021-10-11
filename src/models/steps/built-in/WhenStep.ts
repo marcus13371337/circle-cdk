@@ -1,24 +1,22 @@
 import { Config } from '../../../types/Config'
+import { customizeObject, Customizer } from '../../../utils/customizeObject'
 import { listToConfig } from '../../../utils/listToConfig'
 import { ChildEntryConfigContext } from '../../Entity'
-import {
-  BasicLogicStatement,
-  compileStatement,
-  LogicStatement,
-} from '../../LogicStatement'
+import { compileStatement, Statement } from '../../LogicStatement'
 import { Step, StepConfigParams } from '../Step'
 
 export class WhenStep extends Step {
-  public condition: LogicStatement | BasicLogicStatement
+  public condition: Statement
   public steps: Step[] = []
 
-  constructor(condition: LogicStatement | BasicLogicStatement) {
+  constructor(condition: Statement) {
     super('when')
     this.condition = condition
   }
 
-  addStep(step: Step) {
-    this.steps = [...this.steps, step]
+  addStep<T extends Step>(step: T, customize?: Customizer<T>) {
+    this.steps = [...this.steps, customizeObject(step, customize)]
+    return this
   }
 
   assertValid() {

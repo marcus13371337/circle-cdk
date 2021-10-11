@@ -1,12 +1,11 @@
 import { ChildEntryConfigContext } from '../../Entity'
 import { Step, StepParent } from '../Step'
 
+export type CustomStepParams = Record<string, string | boolean | number>
+
 export class CustomStep extends Step {
-  public params: Record<string, string | boolean | number>
-  constructor(
-    type: string,
-    params: Record<string, string | boolean | number> = {},
-  ) {
+  public params: CustomStepParams
+  constructor(type: string, params: CustomStepParams = {}) {
     super(type)
     this.params = params
   }

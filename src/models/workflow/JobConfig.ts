@@ -1,3 +1,4 @@
+import { customizeObject, Customizer } from '../../utils/customizeObject'
 import { listToConfig } from '../../utils/listToConfig'
 import { pickAttributesToConfig } from '../../utils/pickAttributesToConfig'
 import { ChildEntry, ChildEntryConfigContext } from '../Entity'
@@ -35,18 +36,18 @@ export class JobConfig extends ChildEntry<Parent> {
     return this
   }
 
-  addPreStep(step: Step) {
-    this.preSteps = [...this.preSteps, step]
+  addPreStep<T extends Step>(step: T, customize?: Customizer<T>) {
+    this.preSteps = [...this.preSteps, customizeObject(step, customize)]
     return this
   }
 
-  addPostStep(step: Step) {
-    this.postSteps = [...this.postSteps, step]
+  addPostStep<T extends Step>(step: T, customize?: Customizer<T>) {
+    this.postSteps = [...this.postSteps, customizeObject(step, customize)]
     return this
   }
 
-  addMatrix() {
-    this.matrix = new JobMatrix()
+  addMatrix(customize?: Customizer<JobMatrix>) {
+    this.matrix = customizeObject(new JobMatrix(), customize)
     return this.matrix
   }
 

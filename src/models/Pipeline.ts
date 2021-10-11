@@ -7,8 +7,8 @@ import { Entry } from './Entity'
 import { Config } from '../types/Config'
 import { recordToConfig } from '../utils/recordToConfig'
 import { Job } from './Job'
-import { EntryParameters } from '../types/EntryParameters'
 import { KeyMap } from '../types/KeyMap'
+import { customizeObject, Customizer } from '../utils/customizeObject'
 
 export type Version = 2 | 2.0 | 2.1
 
@@ -22,8 +22,16 @@ export class Pipeline extends Entry {
   private jobs: KeyMap<Job> = {}
   private workflows: KeyMap<Workflow> = {}
 
-  public addOrb(name: string, ...orbParams: EntryParameters<typeof Orb>) {
-    const orb = new Orb(...orbParams)
+  static create(customizer?: Customizer<Pipeline>) {
+    return customizeObject(new Pipeline(), customizer)
+  }
+
+  public addOrb(
+    name: string,
+    nameAndVersion: string,
+    customizer?: Customizer<Orb>,
+  ) {
+    const orb = customizeObject(new Orb(nameAndVersion), customizer)
     this.orbs[name] = orb
     return orb
   }
@@ -32,11 +40,8 @@ export class Pipeline extends Entry {
     return this.orbs[name]
   }
 
-  public addCommand(
-    commandName: string,
-    ...commandParams: EntryParameters<typeof Command>
-  ) {
-    const command = new Command(...commandParams)
+  public addCommand(commandName: string, customizer?: Customizer<Command>) {
+    const command = customizeObject(new Command(), customizer)
     this.commands[commandName] = command
     return command
   }
@@ -45,8 +50,12 @@ export class Pipeline extends Entry {
     return this.commands[name]
   }
 
-  public addParameter(name: string, parameter: Parameter) {
-    this.parameters[name] = parameter
+  public addParameter<T extends Parameter>(
+    name: string,
+    parameter: T,
+    customize?: Customizer<T>,
+  ) {
+    this.parameters[name] = customizeObject(parameter, customize)
     return this
   }
 
@@ -54,20 +63,14 @@ export class Pipeline extends Entry {
     return Object.keys(this.parameters)
   }
 
-  public addExecutor(
-    executorName: string,
-    ...executorParams: EntryParameters<typeof Executor>
-  ) {
-    const executor = new Executor(...executorParams)
+  public addExecutor(executorName: string, customize?: Customizer<Executor>) {
+    const executor = customizeObject(new Executor(), customize)
     this.executors[executorName] = executor
     return executor
   }
 
-  public addJob(
-    jobName: string,
-    ...jobParameters: EntryParameters<typeof Executor>
-  ) {
-    const job = new Job(...jobParameters)
+  public addJob(jobName: string, customize?: Customizer<Job>) {
+    const job = customizeObject(new Job(), customize)
     this.jobs[jobName] = job
     return job
   }
@@ -76,8 +79,8 @@ export class Pipeline extends Entry {
     return this.jobs
   }
 
-  public addWorkflow(workflowName: string) {
-    const workflow = new Workflow()
+  public addWorkflow(workflowName: string, customizer?: Customizer<Workflow>) {
+    const workflow = customizeObject(new Workflow(), customizer)
     this.workflows[workflowName] = workflow
     return workflow
   }

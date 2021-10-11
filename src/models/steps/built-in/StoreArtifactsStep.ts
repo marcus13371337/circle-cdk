@@ -7,7 +7,7 @@ export class StoreArtifactsStep extends Step {
   public path: ExpressionOrValue<string>
   public destination: ExpressionOrValue<string> | null = null
 
-  constructor(path: string) {
+  constructor(path: ExpressionOrValue<string>) {
     super('store_artifacts')
     this.path = path
   }

@@ -1,6 +1,6 @@
 import { Config } from '../../types/Config'
-import { EntryParameters } from '../../types/EntryParameters'
 import { KeyMap } from '../../types/KeyMap'
+import { customizeObject, Customizer } from '../../utils/customizeObject'
 import { listToConfig } from '../../utils/listToConfig'
 import { pickAttributesToConfig } from '../../utils/pickAttributesToConfig'
 import { recordToConfig } from '../../utils/recordToConfig'
@@ -24,32 +24,30 @@ export class Executor extends ChildEntry<Parent> {
   public workingDirectory: ExpressionOrValue<string> | null = null
   public environment: KeyMap<ExpressionOrValue> = {}
 
-  public addDocker(...dockerParams: EntryParameters<typeof Docker>) {
-    const docker = new Docker(...dockerParams)
+  public addDocker(image: string, customize?: Customizer<Docker>) {
+    const docker = customizeObject(new Docker(image), customize)
     this.docker = [...this.docker, docker]
     return docker
   }
 
   public addMachine(
     name: string,
-    ...machineParams: EntryParameters<typeof Machine>
+    image: string,
+    customize?: Customizer<Machine>,
   ) {
-    const machine = new Machine(...machineParams)
+    const machine = customizeObject(new Machine(image), customize)
     this.machine[name] = machine
     return machine
   }
 
-  public addMacOS(name: string, ...macOSParams: EntryParameters<typeof MacOS>) {
-    const macOS = new MacOS(...macOSParams)
+  public addMacOS(name: string, xcode: string, customize?: Customizer<MacOS>) {
+    const macOS = customizeObject(new MacOS(xcode), customize)
     this.macos[name] = macOS
     return macOS
   }
 
-  public addWindows(
-    name: string,
-    ...windowsParams: EntryParameters<typeof Windows>
-  ) {
-    const windows = new Windows(...windowsParams)
+  public addWindows(name: string, customize?: Customizer<Windows>) {
+    const windows = customizeObject(new Windows(), customize)
     this.windows[name] = windows
     return windows
   }

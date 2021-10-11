@@ -1,6 +1,6 @@
 import { Config } from '../types/Config'
-import { EntryParameters } from '../types/EntryParameters'
 import { KeyMap } from '../types/KeyMap'
+import { customizeObject, Customizer } from '../utils/customizeObject'
 import { listToConfig } from '../utils/listToConfig'
 import { pickAttributesToConfig } from '../utils/pickAttributesToConfig'
 import { recordToConfig } from '../utils/recordToConfig'
@@ -27,31 +27,39 @@ export class Job extends ChildEntry<Parent> {
   public resourceClass: ExpressionOrValue<string> | null = null
   public circleciIpRanges = false
 
-  addStep(step: Step) {
-    this.steps = [...this.steps, step]
+  addStep<T extends Step>(step: T, customize?: Customizer<T>) {
+    this.steps = [...this.steps, customizeObject(step, customize)]
     return this
   }
 
-  addDocker(...params: EntryParameters<typeof Docker>) {
-    const docker = new Docker(...params)
+  addDocker(image: string, customize?: Customizer<Docker>) {
+    const docker = customizeObject(new Docker(image), customize)
     this.docker = [...this.docker, docker]
     return docker
   }
 
-  addMachine(machineName: string, ...params: EntryParameters<typeof Machine>) {
-    const machine = new Machine(...params)
+  addMachine(
+    machineName: string,
+    image: string,
+    customize?: Customizer<Machine>,
+  ) {
+    const machine = customizeObject(new Machine(image), customize)
     this.machine[machineName] = machine
     return machine
   }
 
-  addMacOS(macOSName: string, ...params: EntryParameters<typeof MacOS>) {
-    const macOS = new MacOS(...params)
+  addMacOS(macOSName: string, xcode: string, customize?: Customizer<MacOS>) {
+    const macOS = customizeObject(new MacOS(xcode), customize)
     this.macos[macOSName] = macOS
     return macOS
   }
 
-  addParameter(parameterName: string, parameter: Parameter) {
-    this.parameters[parameterName] = parameter
+  addParameter<T extends Parameter>(
+    parameterName: string,
+    parameter: T,
+    customize?: Customizer<T>,
+  ) {
+    this.parameters[parameterName] = customizeObject(parameter, customize)
     return this
   }
 

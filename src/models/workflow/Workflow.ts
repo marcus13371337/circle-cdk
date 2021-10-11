@@ -1,4 +1,5 @@
 import { EntryParameters } from '../../types/EntryParameters'
+import { customizeObject, Customizer } from '../../utils/customizeObject'
 import { listToConfig } from '../../utils/listToConfig'
 import { pickAttributesToConfig } from '../../utils/pickAttributesToConfig'
 import { ChildEntry, ChildEntryConfigContext } from '../Entity'
@@ -25,8 +26,8 @@ export class Workflow extends ChildEntry<Parent> {
     return this
   }
 
-  addJobConfig(jobName: string) {
-    const jobConfig = new JobConfig(jobName)
+  addJobConfig(jobName: string, customize?: Customizer<JobConfig>) {
+    const jobConfig = customizeObject(new JobConfig(jobName), customize)
     this.jobConfigs = [...this.jobConfigs, jobConfig]
     return jobConfig
   }
