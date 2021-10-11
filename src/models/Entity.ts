@@ -5,7 +5,9 @@ import { Pipeline } from './Pipeline'
 export abstract class Entry {
   abstract toConfig(): Config
   toConfigString() {
-    return YAML.stringify(this.toConfig())
+    return YAML.stringify(this.toConfig(), {
+      maxAliasCount: -1,
+    })
   }
 }
 
