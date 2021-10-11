@@ -3,6 +3,7 @@ import { listToConfig } from '../../utils/listToConfig'
 import { pickAttributesToConfig } from '../../utils/pickAttributesToConfig'
 import { ChildEntry, ChildEntryConfigContext } from '../Entity'
 import { Step } from '../steps/Step'
+import { compileExpression, ExpressionOrValue } from '../variables'
 import { Filter } from './Filter'
 import { JobMatrix } from './JobMatrix'
 import { Workflow } from './Workflow'
@@ -20,6 +21,7 @@ export class JobConfig extends ChildEntry<Parent> {
   private matrix: JobMatrix | null = null
   public preSteps: Step[] = []
   public postSteps: Step[] = []
+  public parameters: Record<string, ExpressionOrValue> = {}
 
   constructor(jobName: string) {
     super()
@@ -49,6 +51,11 @@ export class JobConfig extends ChildEntry<Parent> {
   addMatrix(customize?: Customizer<JobMatrix>) {
     this.matrix = customizeObject(new JobMatrix(), customize)
     return this.matrix
+  }
+
+  addParameter(parameterName: string, value: ExpressionOrValue) {
+    this.parameters[parameterName] = value
+    return this
   }
 
   private assertValid(context: ChildEntryConfigContext<Parent>) {
@@ -102,6 +109,14 @@ export class JobConfig extends ChildEntry<Parent> {
     }
     if (this.postSteps.length) {
       config['post-steps'] = listToConfig(this.postSteps, newContext)
+    }
+
+    if (Object.keys(this.parameters).length) {
+      Object.entries(this.parameters).forEach(
+        ([parameterName, parameterValue]) => {
+          config[parameterName] = compileExpression(parameterValue, newContext)
+        },
+      )
     }
 
     return Object.keys(config).length > 0
