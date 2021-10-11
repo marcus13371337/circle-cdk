@@ -35,11 +35,14 @@ export class RunStep extends Step {
 
     const compiledCommand = compileExpression(this.command, context)
 
-    return Object.keys(result).length > 0
-      ? {
-          command: compiledCommand,
-          ...result,
-        }
-      : compiledCommand
+    return {
+      run:
+        Object.keys(result).length > 0
+          ? {
+              command: compiledCommand,
+              ...result,
+            }
+          : compiledCommand,
+    }
   }
 }

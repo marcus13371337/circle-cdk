@@ -83,7 +83,8 @@ export class JobConfig extends ChildEntry<Parent> {
     }
 
     if (this.contexts.length) {
-      config.context = this.contexts
+      config.context =
+        this.contexts.length > 1 ? this.contexts : this.contexts[0]
     }
 
     if (this.branchFilter || this.tagFilter) {
