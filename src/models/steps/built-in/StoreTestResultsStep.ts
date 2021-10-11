@@ -4,11 +4,8 @@ import { ExpressionOrValue } from '../../variables'
 import { Step, StepParent } from '../Step'
 
 export class StoreTestResultsStep extends Step {
-  public path: ExpressionOrValue<string>
-
-  constructor(path: ExpressionOrValue<string>) {
+  constructor(public path: ExpressionOrValue<string>) {
     super('store_test_results')
-    this.path = path
   }
 
   toConfig(context: ChildEntryConfigContext<StepParent>) {

@@ -4,11 +4,8 @@ import { ExpressionOrValue } from '../../variables'
 import { Step, StepParent } from '../Step'
 
 export class AttachWorkspaceStep extends Step<'attach_workspace'> {
-  public at: ExpressionOrValue<string>
-
-  constructor(at: ExpressionOrValue<string>) {
+  constructor(public at: ExpressionOrValue<string>) {
     super('attach_workspace')
-    this.at = at
   }
 
   toConfig(context: ChildEntryConfigContext<StepParent>) {

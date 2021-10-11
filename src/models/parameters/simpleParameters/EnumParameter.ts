@@ -5,7 +5,7 @@ import { Parameter, ParameterParent } from '../Parameter'
 export class EnumParameter extends Parameter<string> {
   public enum: string[] = []
 
-  constructor(enumValues: string[]) {
+  constructor(public enumValues: string[]) {
     super('enum')
     this.enum = enumValues
   }

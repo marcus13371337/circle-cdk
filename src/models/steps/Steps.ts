@@ -15,8 +15,11 @@ import { StoreTestResultsStep } from './built-in/StoreTestResultsStep'
 import { WhenStep } from './built-in/WhenStep'
 
 export class Steps {
-  static addSSHKeys(customizer?: Customizer<AddSSHKeysStep>) {
-    return customizeObject(new AddSSHKeysStep(), customizer)
+  static addSSHKeys(
+    fingerprints: ExpressionOrValue<string>[],
+    customizer?: Customizer<AddSSHKeysStep>,
+  ) {
+    return customizeObject(new AddSSHKeysStep(fingerprints), customizer)
   }
   static attachWorkspace(
     at: string,

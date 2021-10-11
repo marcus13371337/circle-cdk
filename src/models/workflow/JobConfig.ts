@@ -11,7 +11,6 @@ import { Workflow } from './Workflow'
 type Parent = Workflow
 
 export class JobConfig extends ChildEntry<Parent> {
-  public jobName: string
   public name: string | null = null
   public requires: string[] = []
   public contexts: string[] = []
@@ -23,9 +22,8 @@ export class JobConfig extends ChildEntry<Parent> {
   public postSteps: Step[] = []
   public parameters: Record<string, ExpressionOrValue> = {}
 
-  constructor(jobName: string) {
+  constructor(public jobName: string) {
     super()
-    this.jobName = jobName
   }
 
   addRequire(name: string) {

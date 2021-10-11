@@ -4,18 +4,14 @@ import { ExpressionOrValue } from '../../variables'
 import { Step, StepParent } from '../Step'
 
 export class SaveCacheStep extends Step {
-  public paths: ExpressionOrValue<string>[]
-  public key: ExpressionOrValue<string>
   public name: ExpressionOrValue<string> | null = null
   public when: ExpressionOrValue<string> | null = null
 
   constructor(
-    paths: ExpressionOrValue<string>[],
-    key: ExpressionOrValue<string>,
+    public paths: ExpressionOrValue<string>[],
+    public key: ExpressionOrValue<string>,
   ) {
     super('save_cache')
-    this.paths = paths
-    this.key = key
   }
 
   toConfig(context: ChildEntryConfigContext<StepParent>) {

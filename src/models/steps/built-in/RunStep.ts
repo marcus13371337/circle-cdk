@@ -5,7 +5,6 @@ import { compileExpression, ExpressionOrValue } from '../../variables'
 import { Step, StepParent } from '../Step'
 
 export class RunStep extends Step {
-  public command: ExpressionOrValue<string>
   public name: ExpressionOrValue<string> | null = null
   public shell: ExpressionOrValue<string> | null = null
   public environment: KeyMap<ExpressionOrValue> = {}
@@ -15,9 +14,8 @@ export class RunStep extends Step {
   public when: ExpressionOrValue<'always' | 'on_success' | 'on_fail'> | null =
     null
 
-  constructor(command: ExpressionOrValue<string>) {
+  constructor(public command: ExpressionOrValue<string>) {
     super('run')
-    this.command = command
   }
 
   toConfig(context: ChildEntryConfigContext<StepParent>) {

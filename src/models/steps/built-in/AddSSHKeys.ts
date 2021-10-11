@@ -4,9 +4,7 @@ import { ExpressionOrValue } from '../../variables'
 import { Step, StepParent } from '../Step'
 
 export class AddSSHKeysStep extends Step<'add_ssh_keys'> {
-  public fingerprints: ExpressionOrValue<string>[] | null = null
-
-  constructor() {
+  constructor(public fingerprints: ExpressionOrValue<string>[]) {
     super('add_ssh_keys')
   }
 

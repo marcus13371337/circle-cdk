@@ -6,12 +6,10 @@ import { compileStatement, Statement } from '../../LogicStatement'
 import { Step, StepConfigParams } from '../Step'
 
 export class WhenStep extends Step {
-  public condition: Statement
   public steps: Step[] = []
 
-  constructor(condition: Statement) {
+  constructor(public condition: Statement) {
     super('when')
-    this.condition = condition
   }
 
   addStep<T extends Step>(step: T, customize?: Customizer<T>) {

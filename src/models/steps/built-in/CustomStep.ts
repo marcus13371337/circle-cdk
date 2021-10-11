@@ -4,10 +4,8 @@ import { Step, StepParent } from '../Step'
 export type CustomStepParams = Record<string, string | boolean | number>
 
 export class CustomStep extends Step {
-  public params: CustomStepParams
-  constructor(type: string, params: CustomStepParams = {}) {
+  constructor(type: string, public params: CustomStepParams = {}) {
     super(type)
-    this.params = params
   }
 
   private assertValid(context: ChildEntryConfigContext<StepParent>) {

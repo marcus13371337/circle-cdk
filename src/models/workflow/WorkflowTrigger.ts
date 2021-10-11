@@ -7,12 +7,13 @@ import { Workflow } from './Workflow'
 
 type Parent = Workflow
 export class WorkflowTrigger extends ChildEntry<Parent> {
-  public cron: ExpressionOrValue<string>
   public filter: Filter
 
-  constructor(cron: string, filterCustomizer?: Customizer<Filter>) {
+  constructor(
+    public cron: ExpressionOrValue<string>,
+    filterCustomizer?: Customizer<Filter>,
+  ) {
     super()
-    this.cron = cron
     this.filter = customizeObject(new Filter(), filterCustomizer)
   }
 

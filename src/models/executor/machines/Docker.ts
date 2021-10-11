@@ -17,7 +17,6 @@ interface AwsAuth {
 type Parent = Executor | Job
 
 export class Docker extends ChildEntry<Parent> {
-  public image: string
   public name: string | null = null
   public entrypoint: string | string[] | null = null
   public command: string | string[] | null = null
@@ -26,9 +25,8 @@ export class Docker extends ChildEntry<Parent> {
   public auth: Auth | null = null
   public awsAuth: AwsAuth | null = null
 
-  constructor(image: string) {
+  constructor(public image: string) {
     super()
-    this.image = image
   }
 
   toConfig(context: ChildEntryConfigContext<Parent>) {
