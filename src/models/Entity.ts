@@ -1,13 +1,17 @@
 import { Config } from '../types/Config'
 import YAML from 'yaml'
+import { strOptions } from 'yaml/types'
 import { Pipeline } from './Pipeline'
 
 export abstract class Entry {
   abstract toConfig(): Config
   toConfigString() {
-    return YAML.stringify(this.toConfig(), {
-      maxAliasCount: -1,
-    })
+    const previousLineWidth = strOptions.fold.lineWidth
+    strOptions.fold.lineWidth = 0
+    const yamlString = YAML.stringify(this.toConfig())
+    strOptions.fold.lineWidth = previousLineWidth
+
+    return yamlString
   }
 }
 
