@@ -1,6 +1,6 @@
 {
   "name": "circleci-cdk",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "A CDK-toolkit for creating CircleCI-pipelines",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
