@@ -39,7 +39,7 @@ jobs:
     docker:
       - cimg/node:14.17
     steps:
-      - echo "Hello World"
+      - run: echo "Hello World"
 ```
 
 ### Add configuration
@@ -77,8 +77,9 @@ jobs:
     docker:
       - cimg/node:14.17
     steps:
-      - command: echo "Hello World"
-        working_directory: /my-project
+      - run:
+          command: echo "Hello World"
+          working_directory: /my-project
 ```
 
 ### Using variables
@@ -127,7 +128,7 @@ jobs:
 commands:
   my-command:
     steps:
-      - echo "hello << parameters.name >> in pipeline << pipeline.id >>"
+      - run: echo "hello << parameters.name >> in pipeline << pipeline.id >>"
     parameters:
       name: string
 ```
